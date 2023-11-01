@@ -126,107 +126,74 @@ btnPost.addEventListener('click', () => {
         });
 });
 
-//Modificar
-
+// MODIFICAR
 btnPut.addEventListener('click', () => {
     const inputPutId = document.getElementById("inputPutId").value;
+    const inputPutNombre = document.getElementById("inputPutNombre").value;
+    const inputPutApellido = document.getElementById("inputPutApellido").value;
 
-
-    const ruta = '/users';
-    // Combina la URL base con la ruta para obtener la URL completa
-    const urlCompleta = url + ruta + inputPutId;
-    const updatedUser = "";
-    btnSendChanges.addEventListener('click', () => {
-        const inputPutNombre = document.getElementById("inputPutNombre").value;
-        const inputPutApellido = document.getElementById("inputPutApellido").value;
-        updatedUser = {
-            // Datos del usuario a modificar
+    if (inputPutId) {
+        const ruta = `/users/${inputPutId}`; // Ruta con el ID del usuario a modificar
+        const updatedUser = {
             name: inputPutNombre,
             lastname: inputPutApellido,
-        }
-    })
+        };
 
+        const opciones = {
+            method: 'PUT', // Método de solicitud
+            headers: {
+                'Content-Type': 'application/json', // Tipo de contenido JSON
+            },
+            body: JSON.stringify(updatedUser), // Convierte el objeto a formato JSON
+        };
 
-    // Configura las opciones para la solicitud POST
-    const opciones = {
-        method: 'PUT', // Método de solicitud
-        headers: {
-            'Content-Type': 'application/json', // Tipo de contenido JSON
-        },
-        body: JSON.stringify(updatedUser), // Convierte el objeto a formato JSON
-    };
+        const urlCompleta = url + ruta;
 
-
-
-    // Realiza la solicitud Fetch
-    fetch(urlCompleta, opciones)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al agregar el elemento');
-            }
-            return response.json(); // Puedes parsear la respuesta si la API devuelve datos adicionales
-        })
-        .then(data => {
-            // Maneja la respuesta de la API después de agregar el elemento
-            console.log(data);
-
-
-            // Mostrar resultado final - lsita de todos los usuarios
-            fetch(urlCompleta)
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-
-                    let texto = "";
-                    data.forEach(item => {
-                        texto += `ID: ${item.id}
-                NAME: ${item.name}
-                LASTNAME: ${item.lastname}
-                `;
-                    });
-                    results.innerText = texto;
-
-                })
-                .catch(error => {
-                    console.log('No se puede mostrar la lista de usuarios');
-                });
-
-        })
-        .catch(error => {
-            // Maneja errores de red u otros errores
-            console.error('Error:', error);
-        });
+        fetch(urlCompleta, opciones)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al modificar el usuario');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Mostrar el resultado de la modificación
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    } else {
+        alert("Por favor, ingrese un ID válido para la modificación.");
+    }
 });
 
-
-// Borrar
-
-// Agregar un listener para el botón "Borrar"
+// ELIMINAR
 btnDelete.addEventListener('click', () => {
-    const userId = inputDelete.value;
+    const userId = document.getElementById("inputDelete").value;
 
     if (userId) {
-        fetch(`/users/${userId}`, {
+        const ruta = `/users/${userId}`; // Ruta con el ID del usuario a eliminar
+
+        fetch(url + ruta, {
             method: 'DELETE'
         })
             .then(response => {
                 if (response.ok) {
                     // Lógica para manejar el éxito (por ejemplo, actualizar la lista en el HTML)
                     // También puedes limpiar el campo de entrada
-                    inputDelete.value = '';
+                    document.getElementById("inputDelete").value = '';
                 } else {
                     // Manejar el error y mostrar una alerta
-                    alertError.classList.remove('fade');
+                    alert("Error al eliminar el usuario.");
                 }
             })
             .catch(error => {
                 // Manejar el error y mostrar una alerta
-                alertError.classList.remove('fade');
+                alert("Error de red al intentar eliminar el usuario.");
             });
     } else {
         // Mostrar un mensaje al usuario indicando que debe ingresar un ID
-        alert("Por favor, ingrese un ID válido.");
+        alert("Por favor, ingrese un ID válido para la eliminación.");
     }
 });
-
